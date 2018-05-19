@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="LVQuiz:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/LVQuiz_jar</output-path>
+    <root id="archive" name="LVQuiz.jar">
+      <element id="module-output" name="LVQuiz" />
+    </root>
+  </artifact>
+</component>

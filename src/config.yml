@@ -1,0 +1,18 @@
+Exam1:
+  permission_start: LVquiz.exam1.start
+  permission_update: LVquiz.exam1.update
+  group_to_add_pass: exam1-pass
+  group_to_add_fail: exam1-fail
+  passing_score: 85.00
+  Number-of-Items: 2
+  Commands:
+  - lp user {player} parent add
+
+  item1:
+    Question: "Combien font 1+1?"
+    Correct_Answer: 1
+
+  item2:
+    Question: "Combien font 1+1?"
+    Correct_Answer: 1
+

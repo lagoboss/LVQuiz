@@ -1,0 +1,10 @@
+name: LVQuiz
+version: 1Alpha
+author: L4G0130$$
+main: com.gmail.helplagoverse.LVQuiz.Main
+
+depend: [Vault]
+commands:
+  LVQuiz:
+    description: allows players to take exams
+    usage: /LVQuiz
