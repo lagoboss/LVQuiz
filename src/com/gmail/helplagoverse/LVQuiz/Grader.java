@@ -30,10 +30,11 @@ public class Grader {
 
     String fieldNumberOfItems = "Number-of-Items";
     String fieldPassingScore = "passing_score";
+    String fieldTotal = "Total_Correct";
 
     File filePD;
 
-    int total;
+    int total = 0;
     double requiredScore;
 
     public void onDemandGrader(String examName, String itemNumber, int answer, FileConfiguration inboundPlayerDataFile, FileConfiguration inboundExamData, Player player, File filePlayerData){
@@ -46,6 +47,7 @@ public class Grader {
         this.locCorrectAns = "Correct_Answer";
         this.p = player;
         this.filePD = filePlayerData;
+
 
 
         correctAns = examData.getInt(examN + dot + itemN + dot + locCorrectAns);
@@ -61,6 +63,11 @@ public class Grader {
             if (ans == correctAns){
 
                 playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed, true);
+
+                total = playerData.getInt(headingExamName + dot + examN + dot + fieldTotal);
+                total = total + 1;
+
+                playerData.set(headingExamName + dot + examN + dot + fieldTotal, total);
 
                 try{
                     inboundPlayerDataFile.save(filePD);
