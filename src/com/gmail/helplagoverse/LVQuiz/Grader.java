@@ -48,6 +48,7 @@ public class Grader {
         this.p = player;
         this.filePD = filePlayerData;
 
+            //working!
             if(playerData.getBoolean(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed) != true){
 
                 correctAns = examData.getInt(examN + dot + itemN + dot + locCorrectAns);
@@ -100,44 +101,18 @@ public class Grader {
                 p.sendMessage("You already answered this question; please move on to the next item");
             }
         }
-
+        //working
         public void endExam (FileConfiguration examen, FileConfiguration pData, String quizName, Player p){
 
+            //divide total correct in exam by number of items in exam config multiply it by 100
 
-            int examPoint;
+            int numberCorrectInActualExam = pData.getInt(headingExamName + dot + quizName + dot + fieldTotal);
 
-            int examScore;
-            double passingScore;
-            int pointsPossible;
+            int numberOfItemsOnTheExam = examen.getInt(quizName + dot + fieldNumberOfItems);
 
-            int examPoints = 0;
+            double passingScore = examen.getDouble(quizName + dot + fieldPassingScore);
 
-            for(int i = 0; i <= this.total; i++) {
-
-                //headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed
-                itemN = "item" + i;
-
-                boolean point = pData.getBoolean(headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed);
-
-                if(point) {
-                    examPoints++;
-                    p.sendMessage("point added, points = " + examPoints);
-                }
-
-                //examen.getInt(examN + dot + fieldNumberOfItems);
-
-                pointsPossible = examen.getInt("Exam1.Number-of-Items");
-
-                p.sendMessage("points possible are: " + pointsPossible);
-
-                examScore = 100 * examPoints/pointsPossible;
-
-                p.sendMessage("exam score is: " + examScore);
-
-                passingScore = examen.getDouble(examN + dot + fieldPassingScore);
-
-
-
+            double examScore = 100 * numberCorrectInActualExam/numberOfItemsOnTheExam;
 
             if(examScore >= passingScore){
                     p.sendMessage("You earned a: " + examScore);
@@ -148,7 +123,7 @@ public class Grader {
             }
         }
     }
-}
+
 
         /**this.examData = examen;
         this.playerData = pData;
