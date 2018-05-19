@@ -48,101 +48,104 @@ public class Grader {
         this.p = player;
         this.filePD = filePlayerData;
 
+            if(playerData.getInt(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldValue) != 0){
 
-
-        correctAns = examData.getInt(examN + dot + itemN + dot + locCorrectAns);
-        // "usage is /LVQuiz answer <Exam_Code> <item> <answer>"
-
-        try{
-            playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldValue, ans);
-
-            inboundPlayerDataFile.save(filePD);
-            p.sendMessage("Saving your answer...");
-            p.sendMessage("You answered: " + ans + " please continue answering questions or submit your exam...");
-
-            if (ans == correctAns){
-
-                playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed, true);
-
-                total = playerData.getInt(headingExamName + dot + examN + dot + fieldTotal);
-                total = total + 1;
-
-                playerData.set(headingExamName + dot + examN + dot + fieldTotal, total);
+                correctAns = examData.getInt(examN + dot + itemN + dot + locCorrectAns);
+                // "usage is /LVQuiz answer <Exam_Code> <item> <answer>"
 
                 try{
+                    playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldValue, ans);
+
                     inboundPlayerDataFile.save(filePD);
+                    p.sendMessage("Saving your answer...");
+                    p.sendMessage("You answered: " + ans + " please continue answering questions or submit your exam...");
+
+                    if (ans == correctAns){
+
+                        playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed, true);
+
+                        total = playerData.getInt(headingExamName + dot + examN + dot + fieldTotal);
+                        total = total + 1;
+
+                        playerData.set(headingExamName + dot + examN + dot + fieldTotal, total);
+
+                        try{
+                            inboundPlayerDataFile.save(filePD);
 
 
-                }catch(IOException e){
+                        }catch(IOException e){
 
-                    p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
-                    e.printStackTrace();
-                }
+                            p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
+                            e.printStackTrace();
+                        }
 
-            }
-            else{
-                playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed, false);
+                    }
+                    else{
+                        playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed, false);
 
-                try{
-                    inboundPlayerDataFile.save(filePD);
+                        try{
+                            inboundPlayerDataFile.save(filePD);
+
+                        }catch (IOException e){
+                            p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
+                            e.printStackTrace();
+                        }
+                    }
 
                 }catch (IOException e){
                     p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
                     e.printStackTrace();
                 }
+            }else{
+                p.sendMessage("You already answered this question; please move on to the next item");
             }
-
-        }catch (IOException e){
-            p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
-            e.printStackTrace();
         }
-    }
 
-    public void endExam (FileConfiguration examen, FileConfiguration pData, String quizName, Player p){
+        public void endExam (FileConfiguration examen, FileConfiguration pData, String quizName, Player p){
 
 
-        int examPoint;
+            int examPoint;
 
-        int examScore;
-        double passingScore;
-        int pointsPossible;
+            int examScore;
+            double passingScore;
+            int pointsPossible;
 
-        int examPoints = 0;
+            int examPoints = 0;
 
-        for(int i = 0; i <= this.total; i++) {
+            for(int i = 0; i <= this.total; i++) {
 
-            //headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed
-            itemN = "item" + i;
+                //headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed
+                itemN = "item" + i;
 
-            boolean point = pData.getBoolean(headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed);
+                boolean point = pData.getBoolean(headingExamName + dot + quizName + dot + itemN + dot + fieldAnswer + dot + fieldPassed);
 
-            if(point) {
-                examPoints++;
-                p.sendMessage("point added, points = " + examPoints);
-            }
+                if(point) {
+                    examPoints++;
+                    p.sendMessage("point added, points = " + examPoints);
+                }
 
-            //examen.getInt(examN + dot + fieldNumberOfItems);
+                //examen.getInt(examN + dot + fieldNumberOfItems);
 
-            pointsPossible = examen.getInt("Exam1.Number-of-Items");
+                pointsPossible = examen.getInt("Exam1.Number-of-Items");
 
-            p.sendMessage("points possible are: " + pointsPossible);
+                p.sendMessage("points possible are: " + pointsPossible);
 
-            examScore = 100 * examPoints/pointsPossible;
+                examScore = 100 * examPoints/pointsPossible;
 
-            p.sendMessage("exam score is: " + examScore);
+                p.sendMessage("exam score is: " + examScore);
 
-            passingScore = examen.getDouble(examN + dot + fieldPassingScore);
-
+                passingScore = examen.getDouble(examN + dot + fieldPassingScore);
 
 
 
-        if(examScore >= passingScore){
+
+            if(examScore >= passingScore){
+                    p.sendMessage("You earned a: " + examScore);
+                    p.sendMessage("Congratulations, you passed!");
+            }else{
                 p.sendMessage("You earned a: " + examScore);
-                p.sendMessage("Congratulations, you passed!");
-        }else{
-            p.sendMessage("You earned a: " + examScore);
-            p.sendMessage("We regret to inform you that you failed...");
-        }
+                p.sendMessage("We regret to inform you that you failed...");
+            }
         }
     }
 }
