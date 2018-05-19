@@ -48,7 +48,7 @@ public class Grader {
         this.p = player;
         this.filePD = filePlayerData;
 
-            if(playerData.getInt(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldValue) != 0){
+            if(playerData.getBoolean(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed) != true){
 
                 correctAns = examData.getInt(examN + dot + itemN + dot + locCorrectAns);
                 // "usage is /LVQuiz answer <Exam_Code> <item> <answer>"
