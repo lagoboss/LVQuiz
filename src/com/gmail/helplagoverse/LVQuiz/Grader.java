@@ -1,10 +1,14 @@
 package com.gmail.helplagoverse.LVQuiz;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+
+import static org.bukkit.Bukkit.getServer;
 
 /**
  * Created by lake.smith on 5/17/2018.
@@ -31,11 +35,18 @@ public class Grader {
     String fieldNumberOfItems = "Number-of-Items";
     String fieldPassingScore = "passing_score";
     String fieldTotal = "Total_Correct";
+    String fieldDateCompleted = "Date_Completed";
+    String fieldComplete = "Graded";
+    String fieldScore = "Score";
 
     File filePD;
 
     int total = 0;
     double requiredScore;
+
+    String pluginLogo = ChatColor.GRAY + "[LVQuiz] ";
+
+    String permissionsTagAdded = pluginLogo + ChatColor.GREEN + "Completion tag added to your permission's account...";
 
     public void onDemandGrader(String examName, String itemNumber, int answer, FileConfiguration inboundPlayerDataFile, FileConfiguration inboundExamData, Player player, File filePlayerData){
 
@@ -58,8 +69,8 @@ public class Grader {
                     playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldValue, ans);
 
                     inboundPlayerDataFile.save(filePD);
-                    p.sendMessage("Saving your answer...");
-                    p.sendMessage("You answered: " + ans + " please continue answering questions or submit your exam...");
+                    p.sendMessage(pluginLogo + ChatColor.GRAY + "Saving your answer...");
+                    p.sendMessage(ChatColor.GREEN + "You answered: " + ans + " please continue answering questions or submit your exam...");
 
                     if (ans == correctAns){
 
@@ -76,7 +87,7 @@ public class Grader {
 
                         }catch(IOException e){
 
-                            p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
+                            p.sendMessage(pluginLogo + ChatColor.RED + "Error saving your file; please contact your server's admin for more  details...");
                             e.printStackTrace();
                         }
 
@@ -88,7 +99,7 @@ public class Grader {
                             inboundPlayerDataFile.save(filePD);
 
                         }catch (IOException e){
-                            p.sendMessage("Error saving your file; please contact your server's admin for more  details...");
+                            p.sendMessage(pluginLogo + ChatColor.RED + "Error saving your file; please contact your server's admin for more  details...");
                             e.printStackTrace();
                         }
                     }
@@ -98,13 +109,11 @@ public class Grader {
                     e.printStackTrace();
                 }
             }else{
-                p.sendMessage("You already answered this question; please move on to the next item");
+                p.sendMessage(pluginLogo + ChatColor.RED + "You already answered this question; please move on to the next item");
             }
         }
         //working
-        public void endExam (FileConfiguration examen, FileConfiguration pData, String quizName, Player p){
-
-            //divide total correct in exam by number of items in exam config multiply it by 100
+        public void endExam (File inboundPlayerData, FileConfiguration examen, FileConfiguration pData, String quizName, Player p){
 
             int numberCorrectInActualExam = pData.getInt(headingExamName + dot + quizName + dot + fieldTotal);
 
@@ -114,65 +123,39 @@ public class Grader {
 
             double examScore = 100 * numberCorrectInActualExam/numberOfItemsOnTheExam;
 
+            Date now = new Date();
+            String nowAsString = now.toString();
+
+            pData.set(this.headingExamName + dot + quizName + dot + fieldDateCompleted, nowAsString);
+            pData.set(this.headingExamName + dot + quizName + dot + fieldScore, examScore);
+            pData.set(this.headingExamName + dot + quizName + dot + fieldComplete, true);
+
+            //make a method that updates the notes about a player
+
+            try{
+                pData.save(inboundPlayerData);
+
+            }catch (IOException e){
+                p.sendMessage(pluginLogo + ChatColor.RED + "Error saving your file; please contact your server's admin for more  details...");
+                e.printStackTrace();
+            }
+
             if(examScore >= passingScore){
-                    p.sendMessage("You earned a: " + examScore);
-                    p.sendMessage("Congratulations, you passed!");
+                    p.sendMessage(pluginLogo + ChatColor.GRAY + "You earned: " + examScore + "%");
+                    p.sendMessage(ChatColor.GREEN + "Congratulations, you passed!");
+                    String commandToExecute = "lp user " + p.getName() + " permission settemp " + quizName + ".passed true 30d00h00m";
+                    getServer().dispatchCommand(getServer().getConsoleSender(), commandToExecute);
+                    p.sendMessage(permissionsTagAdded);
+
             }else{
-                p.sendMessage("You earned a: " + examScore);
-                p.sendMessage("We regret to inform you that you failed...");
+                p.sendMessage(pluginLogo + ChatColor.GRAY + "You earned: " + examScore + "%");
+                p.sendMessage(pluginLogo + ChatColor.RED + "We regret to inform you that you failed...");
+                String commandToExecute = "lp user " + p.getName() + " permission settemp " + quizName + ".failed true 30d00h00m";
+                getServer().dispatchCommand(getServer().getConsoleSender(), commandToExecute);
+                p.sendMessage(permissionsTagAdded);
             }
         }
     }
-
-
-        /**this.examData = examen;
-        this.playerData = pData;
-
-        this.total = examData.getInt(examN + dot + fieldNumberOfItems);
-        this.requiredScore = examData.getInt(examN + dot + fieldPassingScore);
-
-
-        p.sendMessage("Total is: " + this.total);
-        int points = 0;
-
-        for(int i = 0; i <= this.total; i++) {
-            boolean point = playerData.getBoolean(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed);
-
-            if(point) {
-                points++;
-                }
-            }
-
-            //int plyrScore = points/this.total;
-            //double plyrScoreD = plyrScore;
-
-            if((plyrScoreD) > this.requiredScore){
-                p.sendMessage("Congratulations, you passed your exam!");
-
-
-            }
-        }**/
-    //playerData.set(headingExamName + dot + examN + dot + itemN + dot + fieldAnswer + dot + fieldPassed);
-    /**
-     * NEED TO MAKE AN EXAM GENERATOR METHOD THAT ADDS THESE FIELDS TO THE PLAYER'S EXAM AND ADDS EACH POSSIBLE EXAM ITEM WITH A DEFAULT VALUE
-     * Exam_Name:
-     Exam1:
-     Started: true
-     Finished: true
-     Date_Started:
-     Date_Completed:
-     Passed:
-     Total_Points:
-     Grade:
-     item1:
-     Answer:
-     Value: 9
-     Passed: false
-     item2:
-     Answer:
-     Value: 90
-     Passed: false
-     **/
 
 
 
